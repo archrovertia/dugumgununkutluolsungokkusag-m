@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fatma'nın Gökkuşağı</title>
+  <style>
+    :root {
+      --sky-dark: #1a1c23;
+      --sky-light: #2c3e50;
+      --rain-color: rgba(174, 194, 224, 0.5);
+      --text-light: #e2e8f0;
+      
+      /* Gökkuşağı Renkleri */
+      --c1: #ff2a6d;
+      --c2: #ff7b00;
+      --c3: #ffea00;
+      --c4: #01ffc3;
+      --c5: #05d9e8;
+      --c6: #b300ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--sky-dark);
+      color: var(--text-light);
+      transition: background 3s ease;
+    }
+
+    body.cleared {
+      background: var(--sky-light);
+    }
+
+    /* --- YAĞMUR --- */
+    #rain-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 2s ease;
+    }
+
+    .drop {
+      position: absolute;
+      background: var(--rain-color);
+      width: 2px;
+      height: 15px;
+      bottom: 100%;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(100vh); }
+    }
+
+    /* --- BULUT (Tıklanabilir) --- */
+    .cloud-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+      transition: opacity 2s ease, transform 2s ease;
+    }
+
+    .cloud-container.hide {
+      opacity: 0;
+      transform: translate(-50%, -150%);
+      pointer-events: none;
+    }
+
+    .cloud-text {
+      margin-bottom: 30px;
+      font-size: 20px;
+      font-style: italic;
+      color: #94a3b8;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .cloud {
+      position: relative;
+      width: 180px;
+      height: 60px;
+      background: #475569;
+      border-radius: 50px;
+      margin: 0 auto;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: background 0.3s, transform 0.3s;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: #475569;
+      border-radius: 50%;
+    }
+
+    .cloud::before {
+      width: 80px;
+      height: 80px;
+      top: -40px;
+      left: 25px;
+    }
+
+    .cloud::after {
+      width: 60px;
+      height: 60px;
+      top: -25px;
+      right: 25px;
+    }
+
+    .cloud:hover {
+      background: #64748b;
+      transform: scale(1.05);
+    }
+    .cloud:hover::before, .cloud:hover::after { background: #64748b; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* --- GÖKKUŞAĞI --- */
+    .rainbow {
+      position: absolute;
+      bottom: -10vh;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 120vw;
+      height: 120vw;
+      max-width: 800px;
+      max-height: 800px;
+      border-radius: 50%;
+      box-shadow: 
+        inset 0 0 0 20px var(--c1),
+        inset 0 0 0 40px var(--c2),
+        inset 0 0 0 60px var(--c3),
+        inset 0 0 0 80px var(--c4),
+        inset 0 0 0 100px var(--c5),
+        inset 0 0 0 120px var(--c6);
+      opacity: 0;
+      transition: transform 3s ease, opacity 3s ease;
+      z-index: 2;
+      pointer-events: none;
+      filter: blur(4px);
+    }
+
+    .rainbow.show {
+      transform: translateX(-50%) scale(1);
+      opacity: 0.6;
+    }
+
+    /* --- DUYGUSAL YAZI --- */
+    .emotional-text {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      max-width: 700px;
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s ease 2s; /* 2 saniye gecikmeli gelir */
+    }
+
+    .emotional-text.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .emotional-text h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      color: var(--c3);
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+
+    .emotional-text p {
+      font-size: clamp(16px, 2.5vw, 22px);
+      line-height: 1.7;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    }
+
+    /* --- KAĞIT GEMİLER (Sürprizler) --- */
+    .water-surface {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 25%;
+      background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
+      z-index: 15;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 5vh;
+      gap: 5vw;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s ease 4s; /* En son gemiler belirir */
+    }
+
+    .water-surface.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .boat-wrapper {
+      position: relative;
+      cursor: pointer;
+      animation: bob 3s ease-in-out infinite;
+      transition: transform 0.3s;
+    }
+
+    .boat-wrapper:hover {
+      transform: scale(1.15) translateY(-10px);
+    }
+
+    .boat-wrapper::after {
+      content: 'Tıkla';
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-style: italic;
+      color: rgba(255,255,255,0.6);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .boat-wrapper:hover::after {
+      opacity: 1;
+    }
+
+    /* Gemilerin kendine has gecikmeleri ve renkleri */
+    .b1 { animation-delay: 0s; }
+    .b2 { animation-delay: 0.7s; }
+    .b3 { animation-delay: 1.4s; }
+    .b4 { animation-delay: 0.3s; }
+
+    .boat-svg {
+      width: 60px;
+      height: 40px;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+    }
+
+    .b1 .boat-svg path { fill: var(--c1); }
+    .b2 .boat-svg path { fill: var(--c3); }
+    .b3 .boat-svg path { fill: var(--c4); }
+    .b4 .boat-svg path { fill: var(--c6); }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    /* --- SÜRPRİZ KUTUSU --- */
+    .surprise-pop {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -45%);
+      width: min(450px, 90vw);
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 30px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--c5);
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s ease;
+      z-index: 30;
+      text-align: center;
+    }
+
+    .surprise-pop.show {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+    }
+
+    .surprise-pop h3 {
+      margin: 0 0 15px;
+      color: var(--c3);
+      font-size: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 10px;
+    }
+
+    .surprise-pop p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .close-pop {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .boat-svg { width: 45px; height: 30px; }
+      .emotional-text { top: 10%; }
+      .emotional-text p { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Yağmur Efekti -->
+  <div id="rain-container"></div>
+
+  <!-- Açılış Bulutu -->
+  <div class="cloud-container" id="cloudContainer">
+    <div class="cloud-text">Bazen fırtına hiç dinmeyecekmiş gibi gelir...<br>(Buluta dokun)</div>
+    <div class="cloud" id="magicCloud"></div>
+  </div>
+
+  <!-- Gökkuşağı -->
+  <div class="rainbow" id="rainbow"></div>
+
+  <!-- Yazı -->
+  <div class="emotional-text" id="emotionalText">
+    <h1>İyi ki Doğdun Gökkuşağım!</h1>
+    <p>Sen benim gözümde hep o kapkara bulutların ardından doğan gökkuşağı oldun. Kendi içindeki fırtınaları, dertleri hep o bulutların arkasına sakladın, kimseye yük olmadın... <br><br>Ama bizim gökyüzümüz ne zaman kararsa, ilk sen koşup o güzel renklerinle dermanımız oldun. Şimdi bırak da bugün, senin gökyüzünde biz renk açtıralım.</p>
+  </div>
+
+  <!-- Su Birikintisi ve Kağıt Gemiler (Origami SVG) -->
+  <div class="water-surface" id="waterSurface">
+    <div class="boat-wrapper b1" data-secret="pink">
+      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
+    </div>
+    <div class="boat-wrapper b2" data-secret="yellow">
+      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
+    </div>
+    <div class="boat-wrapper b3" data-secret="green">
+      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
+    </div>
+    <div class="boat-wrapper b4" data-secret="purple">
+      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
+    </div>
+  </div>
+
+  <!-- Sürpriz Popup -->
+  <div class="surprise-pop" id="surprisePop">
+    <button class="close-pop" id="closePop">×</button>
+    <h3 id="popTitle">Başlık</h3>
+    <p id="popText">İçerik</p>
+  </div>
+
+  <!-- Müzik -->
+  <audio id="bgMusic" preload="auto">
+    <source src="fatma-muzik.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // --- YAĞMUR OLUŞTURUCU ---
+    const rainContainer = document.getElementById('rain-container');
+    const dropCount = 100;
+    
+    for (let i = 0; i < dropCount; i++) {
+      let drop = document.createElement('div');
+      drop.classList.add('drop');
+      // Rastgele pozisyon ve hız
+      drop.style.left = Math.random() * 100 + 'vw';
+      drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+      drop.style.animationDelay = Math.random() * 2 + 's';
+      rainContainer.appendChild(drop);
+    }
+
+    // --- DOM ELEMENTLERİ ---
+    const magicCloud = document.getElementById('magicCloud');
+    const cloudContainer = document.getElementById('cloudContainer');
+    const rainbow = document.getElementById('rainbow');
+    const emotionalText = document.getElementById('emotionalText');
+    const waterSurface = document.getElementById('waterSurface');
+    const bgMusic = document.getElementById('bgMusic');
+    
+    const boats = document.querySelectorAll('.boat-wrapper');
+    const surprisePop = document.getElementById('surprisePop');
+    const closePop = document.getElementById('closePop');
+    const popTitle = document.getElementById('popTitle');
+    const popText = document.getElementById('popText');
+
+    // --- SÜRPRİZ İÇERİKLERİ ---
+    const secretsData = {
+      pink: {
+        title: "Gökkuşağım",
+        text: "Ne kadar karanlık romanlar okursan oku, o renkli ve fedakar ruhun hiç solmasın. Bize kattığın tüm renkler için teşekkürler."
+      },
+      yellow: {
+        title: "Kan Donduran Sayfalar",
+        text: "Korku ve gerilim damarlarında akıyor! Bugünün önerisi: Jean-Christophe Grangé'dan 'Siyah Kan'. Gece yarısı okurken o karanlık atmosfere davetlisin."
+      },
+      green: {
+        title: "Cacabey'in Gölgesi",
+        text: "Kırşehir'in göbeğinde, Cacabey'in etrafındaki o loş, tarihi sokaklar... Kulaklığını takıp yürürken kendini bir romanın baş karakteri gibi hissedeceksin."
+      },
+      purple: {
+        title: "Stephen King'in Gemisi",
+        text: "Tıpkı 'IT' romanındaki gibi sularda yüzen kağıt bir gemi... Ağaçlı'daki o sessiz yürüyüş yolunda yağmur sonrası yürürken aklına bu sahne gelsin."
+      }
+    };
+
+    // --- BULUTA TIKLAMA (SİHRİ BAŞLAT) ---
+    magicCloud.addEventListener('click', () => {
+      // Bulutu gizle
+      cloudContainer.classList.add('hide');
+      
+      // Yağmuru durdur
+      rainContainer.style.opacity = '0';
+      setTimeout(() => { rainContainer.innerHTML = ''; }, 2000); // 2 sn sonra domdan temizle
+      
+      // Gökyüzü rengini aç
+      document.body.classList.add('cleared');
+
+      // Gökkuşağı, Yazı ve Gemileri göster (CSS gecikmeleriyle sırayla gelecekler)
+      rainbow.classList.add('show');
+      emotionalText.classList.add('show');
+      waterSurface.classList.add('show');
+
+      // Müziği başlat
+      bgMusic.volume = 0;
+      bgMusic.play().catch(err => console.log("Müzik engellendi:", err));
+
+      let vol = 0;
+      let fadeInterval = setInterval(() => {
+        if (vol < 0.8) {
+          vol += 0.05;
+          bgMusic.volume = vol;
+        } else {
+          clearInterval(fadeInterval);
+        }
+      }, 200);
+    });
+
+    // --- GEMİLERE TIKLAMA MANTIĞI ---
+    boats.forEach(boat => {
+      boat.addEventListener('click', () => {
+        const key = boat.getAttribute('data-secret');
+        popTitle.textContent = secretsData[key].title;
+        popText.textContent = secretsData[key].text;
+        
+        // Renge göre başlık rengini değiştir
+        if(key === 'pink') popTitle.style.color = 'var(--c1)';
+        if(key === 'yellow') popTitle.style.color = 'var(--c3)';
+        if(key === 'green') popTitle.style.color = 'var(--c4)';
+        if(key === 'purple') popTitle.style.color = 'var(--c6)';
+
+        surprisePop.classList.add('show');
+      });
+    });
+
+    closePop.addEventListener('click', () => {
+      surprisePop.classList.remove('show');
+    });
+  </script>
+</body>
+</html>
