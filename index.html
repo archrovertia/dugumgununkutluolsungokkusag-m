@@ -7,15 +7,13 @@
   <style>
     :root {
       --rain-color: rgba(174, 194, 224, 0.6);
-      --text-light: #e2e8f0;
+      --text-light: #f8fafc;
       
-      /* Gökkuşağı Renkleri */
-      --c1: #ff2a6d;
-      --c2: #ff7b00;
-      --c3: #ffea00;
-      --c4: #01ffc3;
-      --c5: #05d9e8;
-      --c6: #b300ff;
+      /* Gökkuşağı Yıldız Renkleri */
+      --c1: #ff2a6d; /* Pembe Yıldız */
+      --c2: #ffea00; /* Sarı Yıldız */
+      --c3: #01ffc3; /* Yeşil Yıldız */
+      --c4: #b300ff; /* Mor Yıldız */
     }
 
     * {
@@ -52,14 +50,13 @@
       left: 0; 
       width: 100%; 
       height: 100%;
-      background: rgba(10, 15, 20, 0.95); /* Başlangıçta kapkaranlık fırtına havası */
-      z-index: 0;
+      background: rgba(10, 15, 20, 0.95);
+      z-index: 1;
       transition: background 4s ease;
     }
 
-    /* Buluta tıklandıktan sonra filtre aydınlanır, video ortaya çıkar */
     body.cleared .video-overlay {
-      background: rgba(0, 0, 0, 0.25); /* Sadece yazılar okunsun diye çok hafif bir karartı */
+      background: rgba(0, 0, 0, 0.3); /* Video netleşir */
     }
 
     /* --- YAĞMUR --- */
@@ -70,7 +67,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
       transition: opacity 2s ease;
     }
 
@@ -132,24 +129,10 @@
       border-radius: 50%;
     }
 
-    .cloud::before {
-      width: 80px;
-      height: 80px;
-      top: -40px;
-      left: 25px;
-    }
+    .cloud::before { width: 80px; height: 80px; top: -40px; left: 25px; }
+    .cloud::after { width: 60px; height: 60px; top: -25px; right: 25px; }
 
-    .cloud::after {
-      width: 60px;
-      height: 60px;
-      top: -25px;
-      right: 25px;
-    }
-
-    .cloud:hover {
-      background: #64748b;
-      transform: scale(1.05);
-    }
+    .cloud:hover { background: #64748b; transform: scale(1.05); }
     .cloud:hover::before, .cloud:hover::after { background: #64748b; }
 
     @keyframes float {
@@ -160,143 +143,132 @@
     /* --- GÖKKUŞAĞI --- */
     .rainbow {
       position: absolute;
-      bottom: -15vh;
+      bottom: -20vh;
       left: 50%;
       transform: translateX(-50%) scale(0);
-      width: 120vw;
-      height: 120vw;
-      max-width: 800px;
-      max-height: 800px;
+      width: 130vw;
+      height: 130vw;
+      max-width: 900px;
+      max-height: 900px;
       border-radius: 50%;
       box-shadow: 
-        inset 0 0 0 20px var(--c1),
-        inset 0 0 0 40px var(--c2),
-        inset 0 0 0 60px var(--c3),
-        inset 0 0 0 80px var(--c4),
-        inset 0 0 0 100px var(--c5),
-        inset 0 0 0 120px var(--c6);
+        inset 0 0 0 20px #ff2a6d,
+        inset 0 0 0 40px #ff7b00,
+        inset 0 0 0 60px #ffea00,
+        inset 0 0 0 80px #01ffc3,
+        inset 0 0 0 100px #05d9e8,
+        inset 0 0 0 120px #b300ff;
       opacity: 0;
-      transition: transform 3s ease, opacity 3s ease;
-      z-index: 2;
+      transition: transform 3.5s ease, opacity 3.5s ease;
+      z-index: 3;
       pointer-events: none;
-      filter: blur(5px);
+      filter: blur(6px);
     }
 
     .rainbow.show {
       transform: translateX(-50%) scale(1);
-      opacity: 0.5;
+      opacity: 0.45;
     }
 
-    /* --- DUYGUSAL YAZI --- */
-    .emotional-text {
+    /* --- ESTETİK YAZI KARTI --- */
+    .card-container {
       position: absolute;
-      top: 10%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: 85%;
-      max-width: 700px;
-      text-align: center;
-      z-index: 10;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: min(650px, 90vw);
+      min-height: 400px;
+      background-image: url('kart.jpg');
+      background-size: cover;
+      background-position: center;
+      border-radius: 16px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
+      z-index: 5;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 2s ease 2.5s;
+      transition: opacity 2s ease 2s, transform 2s cubic-bezier(0.34, 1.56, 0.64, 1) 2s;
+      overflow: hidden;
     }
 
-    .emotional-text.show {
+    .card-container.show {
       opacity: 1;
       pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
     }
 
-    .emotional-text h1 {
-      font-size: clamp(26px, 4vw, 42px);
-      color: var(--c3);
-      margin-bottom: 20px;
-      /* Aydınlık videoda okunması için güçlü gölge */
-      text-shadow: 0 4px 15px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.8);
-    }
-
-    .emotional-text p {
-      font-size: clamp(16px, 2.5vw, 22px);
-      line-height: 1.7;
-      font-weight: 500;
-      text-shadow: 0 3px 15px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,0.9);
-    }
-
-    /* --- KAĞIT GEMİLER --- */
-    .water-surface {
+    /* Kartın üzerindeki yazılar net okunsun diye buzlu/koyu katman */
+    .card-blur-overlay {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 25%;
-      background: linear-gradient(to bottom, transparent, rgba(5, 10, 15, 0.95));
-      z-index: 15;
+      inset: 0;
+      background: rgba(15, 20, 25, 0.65); /* Yazıların arkasını koyulaştırır */
+      padding: 40px 30px;
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      align-items: flex-end;
-      padding-bottom: 5vh;
-      gap: 5vw;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 2s ease 4s;
+      align-items: center;
+      text-align: center;
     }
 
-    .water-surface.show {
+    .card-blur-overlay h1 {
+      font-size: clamp(24px, 3.5vw, 36px);
+      color: var(--c2);
+      margin: 0 0 20px 0;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      font-weight: normal;
+    }
+
+    .card-blur-overlay p {
+      font-size: clamp(15px, 2.2vw, 19px);
+      line-height: 1.7;
+      margin: 0;
+      color: #f1f5f9;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+    }
+
+    /* --- DAĞINIK SİHİRLİ YILDIZLAR --- */
+    .star-wrapper {
+      position: absolute;
+      cursor: pointer;
+      z-index: 6;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s ease 4s; /* En son dağınık yıldızlar gelir */
+      animation: pulseStar 2.5s ease-in-out infinite;
+    }
+
+    .star-wrapper.show {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .boat-wrapper {
-      position: relative;
-      cursor: pointer;
-      animation: bob 3s ease-in-out infinite;
+    /* Yıldızların Ekrandaki Dağınık Konumları */
+    .s-pembe  { top: 15%; left: 12%; animation-delay: 0s; }
+    .s-sari   { top: 20%; right: 12%; animation-delay: 0.6s; }
+    .s-yesil  { bottom: 20%; left: 15%; animation-delay: 1.2s; }
+    .s-mor    { bottom: 18%; right: 15%; animation-delay: 0.3s; }
+
+    .star-svg {
+      width: 35px;
+      height: 35px;
+      filter: drop-shadow(0 0 12px currentColor);
       transition: transform 0.3s;
     }
 
-    .boat-wrapper:hover {
-      transform: scale(1.15) translateY(-10px);
+    .star-wrapper:hover .star-svg {
+      transform: scale(1.3) rotate(20deg);
     }
 
-    .boat-wrapper::after {
-      content: 'Tıkla';
-      position: absolute;
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 14px;
-      font-style: italic;
-      color: rgba(255,255,255,0.9);
-      text-shadow: 0 2px 4px #000;
-      opacity: 0;
-      transition: opacity 0.3s;
+    .s-pembe { color: var(--c1); }
+    .s-sari  { color: var(--c2); }
+    .s-yesil { color: var(--c3); }
+    .s-mor   { color: var(--c4); }
+
+    @keyframes pulseStar {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.12); filter: brightness(1.4); }
     }
 
-    .boat-wrapper:hover::after {
-      opacity: 1;
-    }
-
-    .b1 { animation-delay: 0s; }
-    .b2 { animation-delay: 0.7s; }
-    .b3 { animation-delay: 1.4s; }
-    .b4 { animation-delay: 0.3s; }
-
-    .boat-svg {
-      width: 60px;
-      height: 40px;
-      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.8));
-    }
-
-    .b1 .boat-svg path { fill: var(--c1); }
-    .b2 .boat-svg path { fill: var(--c3); }
-    .b3 .boat-svg path { fill: var(--c4); }
-    .b4 .boat-svg path { fill: var(--c6); }
-
-    @keyframes bob {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-8px) rotate(2deg); }
-    }
-
-    /* --- SÜRPRİZ KUTUSU --- */
+    /* --- SÜRPRİZ POPUP --- */
     .surprise-pop {
       position: absolute;
       left: 50%;
@@ -306,8 +278,7 @@
       max-height: 80vh;
       overflow-y: auto;
       padding: 30px;
-      background: rgba(15, 20, 30, 0.95);
-      border: 1px solid var(--c5);
+      background: rgba(15, 20, 30, 0.96);
       border-radius: 12px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
       opacity: 0;
@@ -315,6 +286,7 @@
       transition: all 0.4s ease;
       z-index: 30;
       text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .surprise-pop.show {
@@ -325,7 +297,6 @@
 
     .surprise-pop h3 {
       margin: 0 0 15px;
-      color: var(--c3);
       font-size: 24px;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       padding-bottom: 10px;
@@ -335,6 +306,7 @@
       margin: 0;
       font-size: 17px;
       line-height: 1.6;
+      color: #e2e8f0;
     }
 
     .close-pop {
@@ -349,68 +321,62 @@
     }
 
     @media (max-width: 768px) {
-      .boat-svg { width: 45px; height: 30px; }
-      .emotional-text { top: 8%; }
-      .emotional-text p { font-size: 15px; }
+      .card-blur-overlay { padding: 25px 20px; }
+      .s-pembe { top: 8%; left: 8%; }
+      .s-sari { top: 10%; right: 8%; }
+      .s-yesil { bottom: 8%; left: 8%; }
+      .s-mor { bottom: 8%; right: 8%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ARKA PLAN VİDEOSU -->
   <video autoplay loop muted playsinline id="bgVideo">
     <source src="arkaplan.mp4" type="video/mp4">
   </video>
   <div class="video-overlay"></div>
 
-  <!-- Yağmur Efekti -->
   <div id="rain-container"></div>
 
-  <!-- Açılış Bulutu -->
   <div class="cloud-container" id="cloudContainer">
     <div class="cloud-text">Bazen fırtına hiç dinmeyecekmiş gibi gelir...<br>(Buluta dokun)</div>
     <div class="cloud" id="magicCloud"></div>
   </div>
 
-  <!-- Gökkuşağı -->
   <div class="rainbow" id="rainbow"></div>
 
-  <!-- Yazı -->
-  <div class="emotional-text" id="emotionalText">
-    <h1>İyi ki Doğdun Gökkuşağım!</h1>
-    <p>Sen benim gözümde hep o kapkara bulutların ardından doğan gökkuşağı oldun. Kendi içindeki fırtınaları, dertleri hep o bulutların arkasına sakladın, kimseye yük olmadın... <br><br>Ama bizim gökyüzümüz ne zaman kararsa, ilk sen koşup o güzel renklerinle dermanımız oldun. Şimdi bırak da bugün, senin gökyüzünde biz renk açtıralım.</p>
-  </div>
-
-  <!-- Su Birikintisi ve Kağıt Gemiler -->
-  <div class="water-surface" id="waterSurface">
-    <div class="boat-wrapper b1" data-secret="pink">
-      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
-    </div>
-    <div class="boat-wrapper b2" data-secret="yellow">
-      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
-    </div>
-    <div class="boat-wrapper b3" data-secret="green">
-      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
-    </div>
-    <div class="boat-wrapper b4" data-secret="purple">
-      <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
+  <div class="card-container" id="cardContainer">
+    <div class="card-blur-overlay">
+      <h1>İyi ki Doğdun Gökkuşağım!</h1>
+      <p>Sen benim gözümde hep o kapkara bulutların ardından doğan gökkuşağı oldun. Kendi içindeki fırtınaları, dertleri hep o bulutların arkasına sakladın, kimseye yük olmadın... <br><br>Ama bizim gökyüzümüz ne zaman kararsa, ilk sen koşup o güzel renklerinle dermanımız oldun. Şimdi bırak da bugün, senin gökyüzünde biz renk açtıralım.</p>
     </div>
   </div>
 
-  <!-- Sürpriz Popup -->
+  <div class="star-wrapper s-pembe" data-secret="pink">
+    <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.133 9.21l8.2-1.192z"/></svg>
+  </div>
+  <div class="star-wrapper s-sari" data-secret="yellow">
+    <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.133 9.21l8.2-1.192z"/></svg>
+  </div>
+  <div class="star-wrapper s-yesil" data-secret="green">
+    <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.133 9.21l8.2-1.192z"/></svg>
+  </div>
+  <div class="star-wrapper s-mor" data-secret="purple">
+    <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.133 9.21l8.2-1.192z"/></svg>
+  </div>
+
   <div class="surprise-pop" id="surprisePop">
     <button class="close-pop" id="closePop">×</button>
     <h3 id="popTitle">Başlık</h3>
     <p id="popText">İçerik</p>
   </div>
 
-  <!-- Müzik -->
   <audio id="bgMusic" preload="auto">
     <source src="fatma-muzik.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    // --- YAĞMUR OLUŞTURUCU ---
+    // --- YAĞMUR DAMLALARI SÜRÜSÜ ---
     const rainContainer = document.getElementById('rain-container');
     const dropCount = 100;
     
@@ -423,21 +389,20 @@
       rainContainer.appendChild(drop);
     }
 
-    // --- DOM ELEMENTLERİ ---
+    // --- ELEMENT BAĞLANTILARI ---
     const magicCloud = document.getElementById('magicCloud');
     const cloudContainer = document.getElementById('cloudContainer');
     const rainbow = document.getElementById('rainbow');
-    const emotionalText = document.getElementById('emotionalText');
-    const waterSurface = document.getElementById('waterSurface');
+    const cardContainer = document.getElementById('cardContainer');
     const bgMusic = document.getElementById('bgMusic');
     
-    const boats = document.querySelectorAll('.boat-wrapper');
+    const stars = document.querySelectorAll('.star-wrapper');
     const surprisePop = document.getElementById('surprisePop');
     const closePop = document.getElementById('closePop');
     const popTitle = document.getElementById('popTitle');
     const popText = document.getElementById('popText');
 
-    // --- SÜRPRİZ İÇERİKLERİ ---
+    // --- SIFIRLANMIŞ SÜRPRİZ DATA ---
     const secretsData = {
       pink: {
         title: "Gökkuşağım",
@@ -452,29 +417,31 @@
         text: "Kırşehir'in göbeğinde, Cacabey'in etrafındaki o loş, tarihi sokaklar... Kulaklığını takıp yürürken kendini bir romanın baş karakteri gibi hissedeceksin."
       },
       purple: {
-        title: "Stephen King'in Gemisi",
-        text: "Tıpkı 'IT' romanındaki gibi sularda yüzen kağıt bir gemi... Ağaçlı'daki o sessiz yürüyüş yolunda yağmur sonrası yürürken aklına bu sahne gelsin."
+        title: "Gözlerden Uzak",
+        text: "Ağaçlı'daki o sessiz yürüyüş yolu... Özellikle yağmurdan hemen sonra, hava serinlediğinde tam aradığın o gizemli gerilim romanı atmosferini sana verecek."
       }
     };
 
-    // --- BULUTA TIKLAMA (SİHRİ BAŞLAT) ---
+    // --- BULUTA TIKLAMA VE SAHNEYİ AÇMA ---
     magicCloud.addEventListener('click', () => {
-      // Bulutu gizle
       cloudContainer.classList.add('hide');
       
-      // Yağmuru durdur
+      // Yağmuru yavaşça bitir
       rainContainer.style.opacity = '0';
       setTimeout(() => { rainContainer.innerHTML = ''; }, 2000);
       
-      // Filtreyi aç (videonun o aydınlık güzel halini göster)
+      // Güneş açar (Karanlık filtre hafifler)
       document.body.classList.add('cleared');
 
-      // Gökkuşağı, Yazı ve Gemileri göster
+      // Gökkuşağı, Şık Kart ve Yıldızları tetikle
       rainbow.classList.add('show');
-      emotionalText.classList.add('show');
-      waterSurface.classList.add('show');
+      cardContainer.classList.add('show');
+      
+      stars.forEach(star => {
+        star.classList.add('show');
+      });
 
-      // Müziği başlat
+      // Yeni müziği başlat
       bgMusic.volume = 0;
       bgMusic.play().catch(err => console.log("Müzik engellendi:", err));
 
@@ -489,17 +456,18 @@
       }, 200);
     });
 
-    // --- GEMİLERE TIKLAMA MANTIĞI ---
-    boats.forEach(boat => {
-      boat.addEventListener('click', () => {
-        const key = boat.getAttribute('data-secret');
+    // --- YILDIZLARA TIKLAMA AKIŞI ---
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const key = star.getAttribute('data-secret');
         popTitle.textContent = secretsData[key].title;
         popText.textContent = secretsData[key].text;
         
+        // Hangi yıldızsa başlık rengini onun neon rengi yapar
         if(key === 'pink') popTitle.style.color = 'var(--c1)';
-        if(key === 'yellow') popTitle.style.color = 'var(--c3)';
-        if(key === 'green') popTitle.style.color = 'var(--c4)';
-        if(key === 'purple') popTitle.style.color = 'var(--c6)';
+        if(key === 'yellow') popTitle.style.color = 'var(--c2)';
+        if(key === 'green') popTitle.style.color = 'var(--c3)';
+        if(key === 'purple') popTitle.style.color = 'var(--c4)';
 
         surprisePop.classList.add('show');
       });
@@ -511,4 +479,3 @@
   </script>
 </body>
 </html>
-
