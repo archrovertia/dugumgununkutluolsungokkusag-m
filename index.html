@@ -6,9 +6,7 @@
   <title>Fatma'nın Gökkuşağı</title>
   <style>
     :root {
-      --sky-dark: #1a1c23;
-      --sky-light: #2c3e50;
-      --rain-color: rgba(174, 194, 224, 0.5);
+      --rain-color: rgba(174, 194, 224, 0.6);
       --text-light: #e2e8f0;
       
       /* Gökkuşağı Renkleri */
@@ -29,13 +27,39 @@
       height: 100vh;
       overflow: hidden;
       font-family: Georgia, "Times New Roman", serif;
-      background: var(--sky-dark);
       color: var(--text-light);
-      transition: background 3s ease;
+      background-color: #000;
     }
 
-    body.cleared {
-      background: var(--sky-light);
+    /* --- ARKA PLAN VİDEOSU --- */
+    #bgVideo {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translateX(-50%) translateY(-50%);
+      z-index: 0;
+      object-fit: cover;
+    }
+
+    /* VİDEO FİLTRESİ (Fırtına -> Güneşli Hava Geçişi) */
+    .video-overlay {
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background: rgba(10, 15, 20, 0.95); /* Başlangıçta kapkaranlık fırtına havası */
+      z-index: 0;
+      transition: background 4s ease;
+    }
+
+    /* Buluta tıklandıktan sonra filtre aydınlanır, video ortaya çıkar */
+    body.cleared .video-overlay {
+      background: rgba(0, 0, 0, 0.25); /* Sadece yazılar okunsun diye çok hafif bir karartı */
     }
 
     /* --- YAĞMUR --- */
@@ -84,8 +108,8 @@
       margin-bottom: 30px;
       font-size: 20px;
       font-style: italic;
-      color: #94a3b8;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      color: #e2e8f0;
+      text-shadow: 0 2px 10px rgba(0,0,0,1);
     }
 
     .cloud {
@@ -96,7 +120,7 @@
       border-radius: 50px;
       margin: 0 auto;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
       transition: background 0.3s, transform 0.3s;
       animation: float 4s ease-in-out infinite;
     }
@@ -136,7 +160,7 @@
     /* --- GÖKKUŞAĞI --- */
     .rainbow {
       position: absolute;
-      bottom: -10vh;
+      bottom: -15vh;
       left: 50%;
       transform: translateX(-50%) scale(0);
       width: 120vw;
@@ -155,18 +179,18 @@
       transition: transform 3s ease, opacity 3s ease;
       z-index: 2;
       pointer-events: none;
-      filter: blur(4px);
+      filter: blur(5px);
     }
 
     .rainbow.show {
       transform: translateX(-50%) scale(1);
-      opacity: 0.6;
+      opacity: 0.5;
     }
 
     /* --- DUYGUSAL YAZI --- */
     .emotional-text {
       position: absolute;
-      top: 15%;
+      top: 10%;
       left: 50%;
       transform: translateX(-50%);
       width: 85%;
@@ -175,7 +199,7 @@
       z-index: 10;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 2s ease 2s; /* 2 saniye gecikmeli gelir */
+      transition: opacity 2s ease 2.5s;
     }
 
     .emotional-text.show {
@@ -184,26 +208,28 @@
     }
 
     .emotional-text h1 {
-      font-size: clamp(28px, 4vw, 42px);
+      font-size: clamp(26px, 4vw, 42px);
       color: var(--c3);
       margin-bottom: 20px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      /* Aydınlık videoda okunması için güçlü gölge */
+      text-shadow: 0 4px 15px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.8);
     }
 
     .emotional-text p {
       font-size: clamp(16px, 2.5vw, 22px);
       line-height: 1.7;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+      font-weight: 500;
+      text-shadow: 0 3px 15px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,0.9);
     }
 
-    /* --- KAĞIT GEMİLER (Sürprizler) --- */
+    /* --- KAĞIT GEMİLER --- */
     .water-surface {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 25%;
-      background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
+      background: linear-gradient(to bottom, transparent, rgba(5, 10, 15, 0.95));
       z-index: 15;
       display: flex;
       justify-content: center;
@@ -212,7 +238,7 @@
       gap: 5vw;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 2s ease 4s; /* En son gemiler belirir */
+      transition: opacity 2s ease 4s;
     }
 
     .water-surface.show {
@@ -239,7 +265,8 @@
       transform: translateX(-50%);
       font-size: 14px;
       font-style: italic;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 2px 4px #000;
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -248,7 +275,6 @@
       opacity: 1;
     }
 
-    /* Gemilerin kendine has gecikmeleri ve renkleri */
     .b1 { animation-delay: 0s; }
     .b2 { animation-delay: 0.7s; }
     .b3 { animation-delay: 1.4s; }
@@ -257,7 +283,7 @@
     .boat-svg {
       width: 60px;
       height: 40px;
-      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.8));
     }
 
     .b1 .boat-svg path { fill: var(--c1); }
@@ -280,7 +306,7 @@
       max-height: 80vh;
       overflow-y: auto;
       padding: 30px;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 20, 30, 0.95);
       border: 1px solid var(--c5);
       border-radius: 12px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
@@ -324,12 +350,18 @@
 
     @media (max-width: 768px) {
       .boat-svg { width: 45px; height: 30px; }
-      .emotional-text { top: 10%; }
-      .emotional-text p { font-size: 16px; }
+      .emotional-text { top: 8%; }
+      .emotional-text p { font-size: 15px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ARKA PLAN VİDEOSU -->
+  <video autoplay loop muted playsinline id="bgVideo">
+    <source src="arkaplan.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
 
   <!-- Yağmur Efekti -->
   <div id="rain-container"></div>
@@ -349,7 +381,7 @@
     <p>Sen benim gözümde hep o kapkara bulutların ardından doğan gökkuşağı oldun. Kendi içindeki fırtınaları, dertleri hep o bulutların arkasına sakladın, kimseye yük olmadın... <br><br>Ama bizim gökyüzümüz ne zaman kararsa, ilk sen koşup o güzel renklerinle dermanımız oldun. Şimdi bırak da bugün, senin gökyüzünde biz renk açtıralım.</p>
   </div>
 
-  <!-- Su Birikintisi ve Kağıt Gemiler (Origami SVG) -->
+  <!-- Su Birikintisi ve Kağıt Gemiler -->
   <div class="water-surface" id="waterSurface">
     <div class="boat-wrapper b1" data-secret="pink">
       <svg class="boat-svg" viewBox="0 0 100 60"><path d="M10,40 L50,10 L90,40 L50,60 Z M50,10 L50,60 L20,40 Z" opacity="0.9"/></svg>
@@ -385,7 +417,6 @@
     for (let i = 0; i < dropCount; i++) {
       let drop = document.createElement('div');
       drop.classList.add('drop');
-      // Rastgele pozisyon ve hız
       drop.style.left = Math.random() * 100 + 'vw';
       drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
       drop.style.animationDelay = Math.random() * 2 + 's';
@@ -433,12 +464,12 @@
       
       // Yağmuru durdur
       rainContainer.style.opacity = '0';
-      setTimeout(() => { rainContainer.innerHTML = ''; }, 2000); // 2 sn sonra domdan temizle
+      setTimeout(() => { rainContainer.innerHTML = ''; }, 2000);
       
-      // Gökyüzü rengini aç
+      // Filtreyi aç (videonun o aydınlık güzel halini göster)
       document.body.classList.add('cleared');
 
-      // Gökkuşağı, Yazı ve Gemileri göster (CSS gecikmeleriyle sırayla gelecekler)
+      // Gökkuşağı, Yazı ve Gemileri göster
       rainbow.classList.add('show');
       emotionalText.classList.add('show');
       waterSurface.classList.add('show');
@@ -465,7 +496,6 @@
         popTitle.textContent = secretsData[key].title;
         popText.textContent = secretsData[key].text;
         
-        // Renge göre başlık rengini değiştir
         if(key === 'pink') popTitle.style.color = 'var(--c1)';
         if(key === 'yellow') popTitle.style.color = 'var(--c3)';
         if(key === 'green') popTitle.style.color = 'var(--c4)';
